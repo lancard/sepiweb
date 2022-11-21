@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+
+    <link href="http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
+        integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+        integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+        crossorigin="anonymous"></script>
+    <script>
+        let socket = null;
+
+        function processAnsiColor(str) {
+            str = str.split(" ").join("&nbsp;");
+            str = str.split("[0;30m").join("</span><span style='color:rgb(0,0,0)'>");
+            str = str.split("[0;31m").join("</span><span style='color:rgb(128,0,0)'>");
+            str = str.split("[0;32m").join("</span><span style='color:rgb(0,128,0)'>");
+            str = str.split("[0;33m").join("</span><span style='color:rgb(128,128,0)'>");
+            str = str.split("[0;34m").join("</span><span style='color:rgb(0,0,128)'>");
+            str = str.split("[0;35m").join("</span><span style='color:rgb(128,0,128)'>");
+            str = str.split("[0;36m").join("</span><span style='color:rgb(0,128,128)'>");
+            str = str.split("[0;37m").join("</span><span style='color:rgb(192,192,192)'>");
+            str = str.split("[1;30m").join("</span><span style='color:rgb(128,128,128)'>");
+            str = str.split("[1;31m").join("</span><span style='color:rgb(255,0,0)'>");
+            str = str.split("[1;32m").join("</span><span style='color:rgb(0,255,0)'>");
+            str = str.split("[1;33m").join("</span><span style='color:rgb(255,255,0)'>");
+            str = str.split("[1;34m").join("</span><span style='color:rgb(0,0,255)'>");
+            str = str.split("[1;35m").join("</span><span style='color:rgb(255,0,255)'>");
+            str = str.split("[1;36m").join("</span><span style='color:rgb(0,255,255)'>");
+            str = str.split("[1;37m").join("</span><span style='color:rgb(255,255,255)'>");
+            str = str.split("��").join("");
+            return str;
+        }
+
+        function onRecieve(data) {
+            let lineList = processAnsiColor(data).split(/\r?\n/);
+
+            const scrollNode = $("#screen")[0];
+            const isBottom = Math.abs(scrollNode.scrollHeight - scrollNode.scrollTop - scrollNode.clientHeight) < 2;
+
+            lineList.forEach(element => {
+                // $("#screen div:eq(0)").remove();
+                $span = $("<span style='color:rgb(170,170,170)'>").html(element);
+                $("<div>").append($span).appendTo("#screen");
+            });
+
+            // 스크롤이 제일 마지막에 있을 때만 오토 스크롤
+            if(isBottom) {
+                setTimeout(() => {
+                    scrollNode.scrollTop = scrollNode.scrollHeight;
+                }, 10);                
+            }            
+        }
+
+        function onConnectRequest() {
+            socket = io("ws://fish.mywire.org:8080");
+            socket.on('data', onRecieve);
+            socket.emit("requestConnection", { host: $("#targetHost").val(), port: $("#targetPort").val() });
+        }
+
+        function onSendRequest() {
+            socket.emit("data", $.trim($("#command").val()) + "\r\n");
+            $("#command").val("");
+        }
+
+        $(function () {
+            $("#command").on("keyup", (evt) => { if (evt.keyCode == 13) { onSendRequest(); } });
+            $("#buttonConnect").on("click", onConnectRequest);
+            $("#buttonSend").on("click", onSendRequest);
+        });
+    </script>
+    <style>
+        * {
+            font-family: "Nanum Gothic Coding";
+            font-size: min(calc(90vw/43), calc(80vh/43));
+        }
+
+        body {
+            text-align: center;
+            background-color: #314CA3;
+            margin: 0;
+        }
+
+        input[type="text"],
+        button {
+            border: 1px solid black;
+        }
+
+        .toolArea {
+            padding: 5px;
+            background-color: #D4D0C8;
+        }
+
+        .toolArea button {
+            width: 15vw;
+        }
+
+        #targetHost {
+            width: 40vw;
+        }
+
+        #targetPort {
+            width: 12vw;
+        }
+
+        #screen {
+            margin-top: 2vh;
+            padding: 3px;
+            width: 90vw;
+            height: 80vh;
+            color: white;
+            background-color: black;
+            display: inline-block;
+            text-align: left;
+            overflow-y: scroll;
+        }
+
+        .commandArea input {
+            width: 70vw;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="toolArea">
+        주소 <input type="text" id="targetHost" value="fish.mywire.org">
+        포트 <input type="text" id="targetPort" value="8303">
+        <button type="button" id="buttonConnect">접속</button>
+    </div>
+
+    <div id="screen">
+    </div>
+    <div class="commandArea">
+        <input type="text" id="command">
+        <button type="button" id="buttonSend">보내기</button>
+    </div>
+</body>
+
+</html>
