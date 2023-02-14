@@ -25,23 +25,27 @@ io.on("connection", (socket) => {
         socket.sepi = arg;
         socket.sepi.socket = net.connect(arg);
         socket.sepi.socket.on('data', (data) => {
-            console.dir(socket);
             socket.emit('data', iconvLite.decode(data, 'cp949'));
         });
     });
 
     socket.on("data", (data) => {
-        if(socket.sepi.socket.destroyed)
-            return;
+        try {
+            if (socket.sepi.socket.destroyed)
+                return;
 
-        socket.sepi.socket.write(iconvLite.encode(data, 'cp949'));
+            socket.sepi.socket.write(iconvLite.encode(data, 'cp949'));
+        }
+        catch (e) {
+            console.dir(e);
+        }
     });
 
     socket.on("disconnect", (reason) => {
         console.log(`socket closed(${reason}): ${socket.id}`);
         try {
             socket.sepi.socket.destroy();
-        } catch(e) {
+        } catch (e) {
             console.dir(e);
         }
     });
