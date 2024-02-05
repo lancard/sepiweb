@@ -10,4 +10,6 @@ COPY app /root/app
 
 WORKDIR /root
 
+RUN npm i express iconv-lite socket.io
+
 ENTRYPOINT node ./index.js
