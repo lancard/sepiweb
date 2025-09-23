@@ -1,17 +1,21 @@
-const socketIoServer = require('socket.io').Server;
-const express = require('express');
 const net = require('net');
+const http = require('http');
+
+const express = require('express');
 const iconvLite = require('iconv-lite');
+const socketIoServer = require('socket.io').Server;
 
 // --------------------- express (just webserver) ---------------------
 const app = express();
-app.get('/', (req, res) => { res.redirect('/index.html'); });
-app.use(express.static('app'));
-app.listen(80, '0.0.0.0');
+app.get('/', (req, res) => {
+    res.sendFile('/index.html');
+});
+
+// --------------------- http server ---------------------
+const server = http.createServer(app);
 
 // --------------------- socket.io -------------------------
-// global list
-const io = new socketIoServer(8080, { cors: { origin: '*', methods: ["GET", "POST"] } });
+const io = new socketIoServer(server, { cors: { origin: '*', methods: ["GET", "POST"] } });
 io.on("connection", (socket) => {
     console.log("new connection: " + socket.id);
     // console.dir(io.sockets.sockets);
@@ -51,3 +55,5 @@ io.on("connection", (socket) => {
     });
 });
 
+// --------------------- http server start ---------------------
+server.listen(80, '0.0.0.0');
