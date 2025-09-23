@@ -8,7 +8,7 @@ const socketIoServer = require('socket.io').Server;
 // --------------------- express (just webserver) ---------------------
 const app = express();
 app.get('/', (req, res) => {
-    res.sendFile('index.html');
+    res.sendFile('/app/index.html');
 });
 
 // --------------------- http server ---------------------
@@ -57,4 +57,5 @@ io.on("connection", (socket) => {
 
 // --------------------- http server start ---------------------
 server.listen(80, '0.0.0.0');
+
 
