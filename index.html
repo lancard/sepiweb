@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
 
-    <link href="http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
         integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
@@ -58,7 +58,7 @@
         }
 
         function onConnectRequest() {
-            socket = io("ws://fish.mywire.org:8080");
+            socket = io("wss://fish.mywire.org");
             socket.on('data', onRecieve);
             socket.emit("requestConnection", { host: $("#targetHost").val(), port: $("#targetPort").val() });
         }
@@ -141,5 +141,6 @@
         <button type="button" id="buttonSend">보내기</button>
     </div>
 </body>
+
 
 </html>
