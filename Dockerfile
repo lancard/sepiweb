@@ -6,7 +6,7 @@ RUN apt-get install npm -y
 RUN apt-get upgrade -y
 
 COPY index.js /root/index.js
-COPY app /root/app
+COPY index.html /root/index.html
 
 WORKDIR /root
 
