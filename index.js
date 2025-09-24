@@ -10,6 +10,9 @@ const app = express();
 app.get('/', (req, res) => {
     res.sendFile('/app/index.html');
 });
+app.get('/index.html', (req, res) => {
+    res.sendFile('/app/index.html');
+});
 
 // --------------------- http server ---------------------
 const server = http.createServer(app);
@@ -57,5 +60,6 @@ io.on("connection", (socket) => {
 
 // --------------------- http server start ---------------------
 server.listen(80, '0.0.0.0');
+
 
 
